@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{ profile.church_name if profile else 'Our Church' }}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px 0;
+        }
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .church-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .church-header .icon {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 2rem; color: white;
+        }
+        .section-title {
+            font-size: .85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1976D2;
+            margin: 20px 0 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            border: none; color: white;
+            padding: 14px; border-radius: 12px;
+            font-weight: 700; font-size: 1.1rem;
+            width: 100%;
+        }
+        .form-check-input:checked { background-color: #1976D2; border-color: #1976D2; }
+        .required { color: #dc3545; }
+    </style>
+</head>
+<body>
+<div class="container px-3">
+    <div class="form-card">
+
+        <!-- Header -->
+        <div class="church-header">
+            <div class="icon"><i class="bi bi-houses-fill"></i></div>
+            <h4 class="fw-bold mb-1" style="color:#1976D2;">
+                Welcome!
+            </h4>
+            <p class="text-muted mb-0">
+                {{ profile.church_name if profile else 'Our Church' }}
+            </p>
+            {% if profile and profile.pastor_name %}
+            <small class="text-muted">Pastor: {{ profile.pastor_name }}</small>
+            {% endif %}
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}{% for cat, msg in messages %}
+            <div class="alert alert-danger rounded-3">{{ msg }}</div>
+            {% endfor %}{% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <!-- Personal Info -->
+            <div class="section-title">
+                <i class="bi bi-person-fill me-1"></i>Personal Information
+            </div>
+
+            <div class="row g-3 mb-2">
+                <div class="col-6">
+                    <label class="form-label fw-semibold">
+                        First Name <span class="required">*</span>
+                    </label>
+                    <input type="text" name="first_name" class="form-control"
+                           placeholder="John" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">
+                        Last Name <span class="required">*</span>
+                    </label>
+                    <input type="text" name="last_name" class="form-control"
+                           placeholder="Smith" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Phone</label>
+                    <input type="tel" name="phone" class="form-control"
+                           placeholder="+1 234 567 8900">
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" name="email" class="form-control"
+                           placeholder="john@email.com">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Address</label>
+                    <input type="text" name="address" class="form-control"
+                           placeholder="Street, City, State">
+                </div>
+            </div>
+
+            <!-- Visit Info -->
+            <div class="section-title">
+                <i class="bi bi-calendar-check me-1"></i>Visit Information
+            </div>
+
+            <div class="row g-3 mb-2">
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Date of Visit</label>
+                    <input type="date" name="visit_date" class="form-control"
+                           value="{{ today }}">
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Service Attended</label>
+                    <select name="service_attended" class="form-select">
+                        <option value="">-- Select --</option>
+                        {% for s in service_types %}
+                        <option value="{{ s.name }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">
+                        How did you hear about us?
+                    </label>
+                    <select name="heard_about_us" class="form-select">
+                        <option value="">-- Select --</option>
+                        <option value="Friend or Family">Friend or Family</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Website">Website</option>
+                        <option value="Flyer or Poster">Flyer or Poster</option>
+                        <option value="Walked Past">Walked Past</option>
+                        <option value="Online Search">Online Search</option>
+                        <option value="Radio or TV">Radio or TV</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Yes/No Questions -->
+            <div class="section-title">
+                <i class="bi bi-patch-question-fill me-1"></i>A Few Quick Questions
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Is this your first time visiting?</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="first_time"
+                               value="yes" id="ft_yes" checked>
+                        <label class="form-check-label" for="ft_yes">Yes</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="first_time"
+                               value="no" id="ft_no">
+                        <label class="form-check-label" for="ft_no">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    Are you saved / born again?
+                </label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="is_saved"
+                               value="yes" id="saved_yes">
+                        <label class="form-check-label" for="saved_yes">Yes</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="is_saved"
+                               value="no" id="saved_no" checked>
+                        <label class="form-check-label" for="saved_no">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    May we contact you?
+                </label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="wants_contact"
+                               value="yes" id="contact_yes" checked>
+                        <label class="form-check-label" for="contact_yes">Yes please!</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="wants_contact"
+                               value="no" id="contact_no">
+                        <label class="form-check-label" for="contact_no">No thanks</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ministry Interest -->
+            <div class="section-title">
+                <i class="bi bi-heart-fill me-1"></i>Ministry Interest
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    I am interested in: (select all that apply)
+                </label>
+                <div class="row g-2">
+                    {% for ministry in [
+                        'Worship Team', 'Ushers', 'Children Ministry',
+                        'Youth Ministry', 'Prayer Team', 'Media/Tech',
+                        'Outreach', 'Cell Group', 'Choir', 'Other'
+                    ] %}
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="ministry_interest" value="{{ ministry }}"
+                                   id="min_{{ loop.index }}">
+                            <label class="form-check-label" for="min_{{ loop.index }}">
+                                {{ ministry }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Prayer Request -->
+            <div class="section-title">
+                <i class="bi bi-chat-heart-fill me-1"></i>Prayer Request
+            </div>
+
+            <div class="mb-4">
+                <textarea name="prayer_request" class="form-control" rows="3"
+                          placeholder="Share a prayer request (optional)..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-send-fill me-2"></i>Submit
+            </button>
+
+        </form>
+
+        <div class="text-center mt-4 text-muted small">
+            <i class="bi bi-shield-check me-1"></i>
+            Your information is kept private and secure.
+        </div>
+    </div>
+</div>
+</body>
+</html>

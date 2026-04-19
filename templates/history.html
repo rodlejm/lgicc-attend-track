@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}History – LGICC | Attend Track{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>All Services</h4>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Record New
+    </a>
+</div>
+
+<div class="card">
+    {% if services %}
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th class="text-center">
+                        <i class="bi bi-person-fill" style="color:#1976D2;"></i> Men
+                    </th>
+                    <th class="text-center">
+                        <i class="bi bi-person-fill" style="color:#e91e8c;"></i> Women
+                    </th>
+                    <th class="text-center">
+                        <i class="bi bi-emoji-smile-fill text-warning"></i> Children
+                    </th>
+                    <th class="text-center">
+                        <i class="bi bi-star-fill text-success"></i> Visitors
+                    </th>
+                    <th class="text-center">Total</th>
+                    <th>Notes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in services %}
+                <tr>
+                    <td class="fw-semibold">{{ s.service_name }}</td>
+                    <td>{{ s.service_date }}</td>
+                    <td class="text-center">{{ s.men }}</td>
+                    <td class="text-center">{{ s.women }}</td>
+                    <td class="text-center">{{ s.children }}</td>
+                    <td class="text-center">{{ s.visitors }}</td>
+                    <td class="text-center">
+                        <span class="badge rounded-pill px-3 py-2"
+                              style="background:#1976D2; font-size:.95rem;">
+                            {{ s.men + s.women + s.children + s.visitors }}
+                        </span>
+                    </td>
+                    <td class="text-muted small">{{ s.notes or '—' }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete', service_id=s.id) }}"
+                              onsubmit="return confirm('Delete this record?')">
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>No records yet.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

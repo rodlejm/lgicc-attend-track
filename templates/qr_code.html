@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}QR Code – LGICC | Attend Track{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 text-center">
+            <h4 class="fw-bold mb-1" style="color:#1976D2;">
+                <i class="bi bi-qr-code me-2"></i>Visitor Registration QR Code
+            </h4>
+            <p class="text-muted mb-4">
+                Print this QR code or display it on a screen.<br>
+                Visitors scan it to fill in their information.
+            </p>
+
+            <!-- QR Code Image -->
+            <div class="p-4 d-inline-block rounded-3 mb-3" style="background:#f8f9fa;">
+                <img src="data:image/png;base64,{{ qr_image }}"
+                     alt="QR Code"
+                     style="width:250px; height:250px;">
+            </div>
+
+            <!-- URL Display -->
+            <div class="p-3 rounded-3 mb-4" style="background:#e3f2fd;">
+                <div class="small text-muted mb-1">Visitor Form URL:</div>
+                <div class="fw-bold" style="color:#1976D2; word-break:break-all;">
+                    {{ visitor_url }}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 justify-content-center">
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="bi bi-printer me-2"></i>Print QR Code
+                </button>
+                <a href="{{ url_for('visitors') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-people me-2"></i>View Visitors
+                </a>
+                <a href="{{ visitor_url }}" target="_blank" class="btn btn-outline-success">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>Preview Form
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        nav, .btn, .alert, .text-muted { display: none !important; }
+        .card { box-shadow: none !important; border: none !important; }
+        img { width: 400px !important; height: 400px !important; }
+    }
+</style>
+
+{% endblock %}

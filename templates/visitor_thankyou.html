@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You!</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .thank-you-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .check-icon {
+            width: 90px; height: 90px;
+            background: linear-gradient(135deg, #2e7d32, #66bb6a);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem; color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="thank-you-card">
+    <div class="check-icon">
+        <i class="bi bi-check-lg"></i>
+    </div>
+    <h3 class="fw-bold mb-2" style="color:#1976D2;">Thank You!</h3>
+    <p class="text-muted mb-4">
+        We are so glad you joined us today.<br>
+        Your information has been received.<br>
+        We look forward to connecting with you!
+    </p>
+    <div class="p-3 rounded-3 mb-4" style="background:#e3f2fd;">
+        <p class="mb-0 fw-semibold" style="color:#1976D2;">
+            God bless you! 🙏
+        </p>
+    </div>
+    <a href="/visitor" class="btn btn-outline-primary">
+        Submit Another Response
+    </a>
+</div>
+</body>
+</html>

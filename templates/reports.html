@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% block title %}Reports – LGICC | Attend Track{% endblock %}
+{% block content %}
+
+<h4 class="fw-bold mb-4"><i class="bi bi-bar-chart-fill me-2" style="color:#1976D2;"></i>Reports</h4>
+
+<!-- ── YTD Stat Cards ── -->
+<div class="text-end mb-3">
+    <button onclick="window.print()" class="btn btn-outline-primary">
+        <i class="bi bi-printer"></i> Print Report
+    </button>
+</div>
+
+<!-- ── YTD Stat Cards ── -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100 text-center">
+            <div class="text-muted small mb-1">YTD Total People</div>
+            <div class="fs-2 fw-bold" style="color:#1976D2;">{{ ytd.ytd_total }}</div>
+            <div class="text-muted" style="font-size:.75rem;">this year</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100 text-center">
+            <div class="text-muted small mb-1">YTD Services</div>
+            <div class="fs-2 fw-bold" style="color:#1976D2;">{{ ytd.ytd_services }}</div>
+            <div class="text-muted" style="font-size:.75rem;">services held</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100 text-center">
+            <div class="text-muted small mb-1">YTD Average</div>
+            <div class="fs-2 fw-bold" style="color:#1976D2;">{{ ytd.ytd_avg }}</div>
+            <div class="text-muted" style="font-size:.75rem;">per service</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100 text-center">
+            <div class="text-muted small mb-1">All-Time Record</div>
+            {% if record %}
+            <div class="fs-2 fw-bold" style="color:#c62828;">{{ record.total }}</div>
+            <div class="text-muted" style="font-size:.75rem;">{{ record.service_name }}</div>
+            {% else %}
+            <div class="fs-2 fw-bold">—</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Best Month Banner -->
+{% if best_month %}
+<div class="rounded-3 p-3 mb-4 d-flex align-items-center gap-2"
+     style="background:#e3f2fd; border-left: 4px solid #1976D2;">
+    <i class="bi bi-trophy-fill fs-5" style="color:#1976D2;"></i>
+    <span><strong>Best Month:</strong> {{ best_month.month }} —
+        <strong>{{ best_month.total }}</strong> total attendees</span>
+</div>
+{% endif %}
+
+<!-- ── Monthly Attendance Trend ── -->
+<div class="card p-4 mb-4">
+    <h5 class="fw-bold mb-1">
+        <i class="bi bi-graph-up me-2" style="color:#1976D2;"></i>Monthly Attendance Trend
+    </h5>
+    <p class="text-muted small mb-3">Total people per month over the last 12 months</p>
+    {% if has_monthly %}
+    <canvas id="monthlyChart" height="90"></canvas>
+    {% else %}
+    <div class="text-center py-4 text-muted">
+        <i class="bi bi-bar-chart fs-1 d-block mb-2"></i>Not enough data yet.
+    </div>
+    {% endif %}
+</div>
+
+<!-- ── Category Breakdown + Service Comparison ── -->
+<div class="row g-4 mb-4">
+
+    <!-- Donut Chart -->
+    <div class="col-md-5">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-pie-chart-fill me-2" style="color:#1976D2;"></i>All-Time Breakdown
+            </h5>
+            <p class="text-muted small mb-3">Men · Women · Children · Visitors</p>
+            {% set grand_total = categories.total_men + categories.total_women + categories.total_children + categories.total_visitors %}
+            {% if grand_total > 0 %}
+            <canvas id="categoryChart"></canvas>
+            <div class="row g-2 mt-3 text-center">
+                <div class="col-6">
+                    <div class="small text-muted">Men</div>
+                    <div class="fw-bold" style="color:#1976D2;">{{ categories.total_men }}</div>
+                </div>
+                <div class="col-6">
+                    <div class="small text-muted">Women</div>
+                    <div class="fw-bold" style="color:#e91e8c;">{{ categories.total_women }}</div>
+                </div>
+                <div class="col-6">
+                    <div class="small text-muted">Children</div>
+                    <div class="fw-bold" style="color:#f59e0b;">{{ categories.total_children }}</div>
+                </div>
+                <div class="col-6">
+                    <div class="small text-muted">Visitors</div>
+                    <div class="fw-bold" style="color:#22c55e;">{{ categories.total_visitors }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-pie-chart fs-1 d-block mb-2"></i>Not enough data yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Service Comparison -->
+    <div class="col-md-7">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-bar-chart-fill me-2" style="color:#1976D2;"></i>Service Comparison
+            </h5>
+            <p class="text-muted small mb-3">Sunday Service vs Weekly Bible Study</p>
+            {% if has_services %}
+            <div class="table-responsive mb-3">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Service</th>
+                            <th class="text-center">Times Held</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Avg</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in service_rows %}
+                        <tr>
+                            <td class="fw-semibold">{{ s.service_name }}</td>
+                            <td class="text-center">{{ s.service_count }}</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill px-3"
+                                      style="background:#1976D2;">{{ s.total }}</span>
+                            </td>
+                            <td class="text-center">{{ s.avg_attendance }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <canvas id="serviceChart" height="130"></canvas>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-bar-chart fs-1 d-block mb-2"></i>Not enough data yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ── Visitor Trend ── -->
+<div class="card p-4 mb-4">
+    <h5 class="fw-bold mb-1">
+        <i class="bi bi-star-fill me-2 text-success"></i>Visitor Trend
+    </h5>
+    <p class="text-muted small mb-3">Number of visitors per month — are we growing?</p>
+    {% if has_visitors %}
+    <canvas id="visitorChart" height="90"></canvas>
+    {% else %}
+    <div class="text-center py-4 text-muted">
+        <i class="bi bi-star fs-1 d-block mb-2"></i>Not enough data yet.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    Chart.defaults.font.family = "'Segoe UI', sans-serif";
+    Chart.defaults.color = '#6c757d';
+
+    // Format "2024-06" → "Jun 2024"
+    function formatMonth(ym) {
+        const [year, month] = ym.split('-');
+        return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
+
+    // ── Monthly Trend Line Chart ──────────────────────────────────
+    {%- if has_monthly %}
+    const monthlyLabels = {{ monthly_labels | tojson }}.map(formatMonth);
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Total',
+                data: {{ monthly_totals | tojson }},
+                borderColor: '#1976D2',
+                backgroundColor: 'rgba(25,118,210,0.08)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#1976D2',
+                pointRadius: 5,
+                pointHoverRadius: 7
+            },{
+                label: 'Men',
+                data: {{ monthly_men | tojson }},
+                borderColor: '#1976D2',
+                borderDash: [4,4],
+                tension: 0.4,
+                pointRadius: 3,
+                fill: false
+            },{
+                label: 'Women',
+                data: {{ monthly_women | tojson }},
+                borderColor: '#e91e8c',
+                borderDash: [4,4],
+                tension: 0.4,
+                pointRadius: 3,
+                fill: false
+            },{
+                label: 'Children',
+                data: {{ monthly_children | tojson }},
+                borderColor: '#f59e0b',
+                borderDash: [4,4],
+                tension: 0.4,
+                pointRadius: 3,
+                fill: false
+            },{
+                label: 'Visitors',
+                data: {{ monthly_visitors | tojson }},
+                borderColor: '#22c55e',
+                borderDash: [4,4],
+                tension: 0.4,
+                pointRadius: 3,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+    {% endif %}
+
+    // ── Category Donut ────────────────────────────────────────────
+    {% if categories %}
+    {% set grand_total = categories.total_men + categories.total_women + categories.total_children + categories.total_visitors %}
+    {% if grand_total > 0 %}
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Men', 'Women', 'Children', 'Visitors'],
+            datasets: [{
+                data: [
+                    {{ categories.total_men }},
+                    {{ categories.total_women }},
+                    {{ categories.total_children }},
+                    {{ categories.total_visitors }}
+                ],
+                backgroundColor: ['#1976D2', '#e91e8c', '#f59e0b', '#22c55e'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '68%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 15, usePointStyle: true }
+                }
+            }
+        }
+    });
+    {% endif %}
+    {% endif %}
+
+    // ── Service Comparison Bar ────────────────────────────────────
+    {% if has_services %}
+    new Chart(document.getElementById('serviceChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ service_names | tojson }},
+            datasets: [{
+                label: 'Average per Service',
+                data: {{ service_avgs | tojson }},
+                backgroundColor: 'rgba(25,118,210,0.85)',
+                borderRadius: 6
+            },{
+                label: 'Total All Time',
+                data: {{ service_totals | tojson }},
+                backgroundColor: 'rgba(66,165,245,0.55)',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+    {% endif %}
+
+    // ── Visitor Trend Bar ─────────────────────────────────────────
+    {% if has_visitors %}
+    const visitorLabels = {{ visitor_labels | tojson }}.map(formatMonth);
+
+    new Chart(document.getElementById('visitorChart'), {
+        type: 'bar',
+        data: {
+            labels: visitorLabels,
+            datasets: [{
+                label: 'Visitors',
+                data: {{ visitor_data | tojson }},
+                backgroundColor: 'rgba(34,197,94,0.75)',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

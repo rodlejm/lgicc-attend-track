@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – LGICC | Attend Track{% endblock %}
+{% block content %}
+
+<!-- ── Stat Cards ── -->
+<div class="row g-3 mb-4">
+
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background:#e3f2fd;">
+                    <i class="bi bi-calendar-check" style="color:#1976D2;"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Services</div>
+                    <div class="fs-3 fw-bold">{{ total_services }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background:#e8f5e9;">
+                    <i class="bi bi-people-fill text-success"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Total People</div>
+                    <div class="fs-3 fw-bold">{{ total_people }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background:#fff3e0;">
+                    <i class="bi bi-graph-up" style="color:#e65100;"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Avg per Service</div>
+                    <div class="fs-3 fw-bold">{{ avg_attendance }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background:#fce4ec;">
+                    <i class="bi bi-trophy-fill" style="color:#c62828;"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Highest Count</div>
+                    <div class="fs-3 fw-bold">{{ highest }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <!-- ── Record Form ── -->
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-4">
+                <i class="bi bi-plus-circle me-2" style="color:#1976D2;"></i>Record Attendance
+            </h5>
+            <form method="POST" action="{{ url_for('index') }}">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Service Name <span class="text-danger">*</span></label>
+                    <select name="service_name" class="form-select" required>
+                        <option value="" disabled selected>-- Select a Service --</option>
+                         {% for s in service_types %}
+                           <option value="{{ s.name }}">{{ s.name }}</option>
+                         {% endfor %}
+                     </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+                    <input type="date" name="service_date" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+    <label class="form-label fw-semibold">Attendance Breakdown</label>
+
+    <div class="row g-2">
+
+        <!-- MEN -->
+        <div class="col-6">
+            <label class="form-label small text-muted mb-1">Men</label>
+            <div class="input-group">
+                <input type="number" name="men" id="men" class="form-control text-center fw-bold"
+                       value="0" min="0">
+                <button type="button" class="btn btn-success" onclick="tapCount('men')">+1</button>
+            </div>
+        </div>
+
+        <!-- WOMEN -->
+        <div class="col-6">
+            <label class="form-label small text-muted mb-1">Women</label>
+            <div class="input-group">
+                <input type="number" name="women" id="women" class="form-control text-center fw-bold"
+                       value="0" min="0">
+                <button type="button" class="btn btn-success" onclick="tapCount('women')">+1</button>
+            </div>
+        </div>
+
+        <!-- CHILDREN -->
+        <div class="col-6">
+            <label class="form-label small text-muted mb-1">Children</label>
+            <div class="input-group">
+                <input type="number" name="children" id="children" class="form-control text-center fw-bold"
+                       value="0" min="0">
+                <button type="button" class="btn btn-success" onclick="tapCount('children')">+1</button>
+            </div>
+        </div>
+
+        <!-- VISITORS -->
+        <div class="col-6">
+            <label class="form-label small text-muted mb-1">Visitors</label>
+            <div class="input-group">
+                <input type="number" name="visitors" id="visitors" class="form-control text-center fw-bold"
+                       value="0" min="0">
+                <button type="button" class="btn btn-success" onclick="tapCount('visitors')">+1</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                <!-- Live Total -->
+                <div class="mb-4 p-3 rounded-3 text-center" style="background:#e3f2fd;">
+                    <div class="text-muted small mb-1">Total Attendance</div>
+                    <div class="fs-2 fw-bold" style="color:#1976D2;" id="live-total">0</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Notes <span class="text-muted fw-normal">(optional)</span>
+                    </label>
+                    <textarea name="notes" class="form-control" rows="2"
+                              placeholder="e.g. Special event, guest speaker..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                    <i class="bi bi-save me-2"></i>Save Attendance
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── Recent Services ── -->
+    <div class="col-md-7">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-clock-history me-2" style="color:#1976D2;"></i>Recent Services
+                </h5>
+                <a href="{{ url_for('history') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+
+            {% if recent %}
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th class="text-center" style="color:#1976D2;">
+                                <i class="bi bi-person-fill"></i>
+                            </th>
+                            <th class="text-center" style="color:#e91e8c;">
+                                <i class="bi bi-person-fill"></i>
+                            </th>
+                            <th class="text-center" style="color:#f59e0b;">
+                                <i class="bi bi-emoji-smile-fill"></i>
+                            </th>
+                            <th class="text-center" style="color:#22c55e;">
+                                <i class="bi bi-star-fill"></i>
+                            </th>
+                            <th class="text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in recent %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ s.service_name }}</div>
+                                {% if s.notes %}
+                                <small class="text-muted">{{ s.notes[:30] }}{% if s.notes|length > 30 %}…{% endif %}</small>
+                                {% endif %}
+                            </td>
+                            <td><small>{{ s.service_date }}</small></td>
+                            <td class="text-center">{{ s.men }}</td>
+                            <td class="text-center">{{ s.women }}</td>
+                            <td class="text-center">{{ s.children }}</td>
+                            <td class="text-center">{{ s.visitors }}</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill px-2" style="background:#1976D2;">
+                                    {{ s.men + s.women + s.children + s.visitors }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                No services recorded yet.<br>Use the form to add your first!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Live total counter
+    const fields = ['men', 'women', 'children', 'visitors'];
+    function updateTotal() {
+        const total = fields.reduce((sum, f) => {
+            return sum + (parseInt(document.querySelector(`[name="${f}"]`).value) || 0);
+        }, 0);
+        document.getElementById('live-total').textContent = total;
+    }
+    fields.forEach(f => {
+        document.querySelector(`[name="${f}"]`).addEventListener('input', updateTotal);
+    });
+
+ function tapCount(field) {
+    let input = document.getElementById(field);
+    let number = parseInt(input.value) || 0;
+    number++;
+    input.value = number;
+
+    updateTotal();  // keeps your live total updated
+}
+
+
+</script>
+
+{% endblock %}

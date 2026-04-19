@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – LGICC | Attend Track</title>
+    <link href="[cdn.jsdelivr.net](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css)" rel="stylesheet">
+    <link href="[cdn.jsdelivr.net](https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css)" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-logo .icon {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2rem; color: white;
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            border: none; color: white;
+            padding: 12px; border-radius: 10px;
+            font-weight: 600; font-size: 1rem;
+        }
+        .btn-login:hover { opacity: 0.9; color: white; }
+        .form-control:focus { border-color: #1976D2; box-shadow: 0 0 0 0.2rem rgba(25,118,210,.15); }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="login-logo">
+        <div class="icon"><i class="bi bi-houses-fill"></i></div>
+        <h4 class="fw-bold mb-0" style="color:#1976D2;">LGICC | Attend Track</h4>
+        <p class="text-muted small">Living God International Christian Center</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+        <div class="alert alert-{{ 'success' if cat == 'success' else 'danger' }} rounded-3 py-2">
+            {{ msg }}
+        </div>
+        {% endfor %}{% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Username</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input type="text" name="username" class="form-control"
+                       placeholder="Enter username" required autofocus>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                <input type="password" name="password" id="password" class="form-control"
+                       placeholder="Enter password" required>
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="togglePassword()">
+                    <i class="bi bi-eye" id="eye-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-login w-100">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+    </form>
+
+    <div class="text-center mt-4 text-muted small">
+        <i class="bi bi-shield-lock me-1"></i>
+        Authorized staff only
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const pwd  = document.getElementById('password');
+    const icon = document.getElementById('eye-icon');
+    if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        pwd.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>
+
+</body>
+</html>
